@@ -53,10 +53,24 @@
     </parent>
 
     <modules>
-        <module>FoodOrderingApp-api</module>
         <module>FoodOrderingApp-db</module>
         <module>FoodOrderingApp-service</module>
+        <module>FoodOrderingApp-api</module>
     </modules>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                    <configuration>
+                        <fork>true</fork>
+                        <executable>C:\Program Files\Java\jdk1.8.0_111\bin\javac.exe</executable>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
