@@ -2,7 +2,7 @@ package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "CUSTOMER_AUTH")
@@ -25,13 +25,13 @@ public class CustomerAuthEntity {
     private String access_token;
 
     @Column(name = "login_at")
-    private Timestamp loginAt;
+    private ZonedDateTime loginAt;
 
     @Column(name = "logout_at")
-    private Timestamp logoutAt;
+    private ZonedDateTime logoutAt;
 
     @Column(name = "expires_at")
-    private Timestamp expiresAt;
+    private ZonedDateTime expiresAt;
 
     public long getId() {
         return id;
@@ -65,27 +65,27 @@ public class CustomerAuthEntity {
         this.access_token = access_token;
     }
 
-    public Timestamp getLoginAt() {
+    public ZonedDateTime getLoginAt() {
         return loginAt;
     }
 
-    public void setLoginAt(Timestamp loginAt) {
+    public void setLoginAt(ZonedDateTime loginAt) {
         this.loginAt = loginAt;
     }
 
-    public Timestamp getLogoutAt() {
+    public ZonedDateTime getLogoutAt() {
         return logoutAt;
     }
 
-    public void setLogoutAt(Timestamp logoutAt) {
+    public void setLogoutAt(ZonedDateTime logoutAt) {
         this.logoutAt = logoutAt;
     }
 
-    public Timestamp getExpiresAt() {
+    public ZonedDateTime getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(Timestamp expiresAt) {
+    public void setExpiresAt(ZonedDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
 }
