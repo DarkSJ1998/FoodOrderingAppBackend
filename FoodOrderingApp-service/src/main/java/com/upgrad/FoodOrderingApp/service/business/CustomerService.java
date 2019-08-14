@@ -1,16 +1,24 @@
 package com.upgrad.FoodOrderingApp.service.business;
 
+import com.upgrad.FoodOrderingApp.service.dao.CustomerAuthEntityDao;
 import com.upgrad.FoodOrderingApp.service.dao.CustomerDao;
+import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
+import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
 
 @Service
 public class CustomerService {
 
     @Autowired
     CustomerDao customerDao;
+
+    @Autowired
+    CustomerAuthEntityDao customerAuthEntityDao;
 
     @Autowired
     private PasswordCryptographyProvider passwordCryptographyProvider;
@@ -99,12 +107,67 @@ public class CustomerService {
     private void encryptPassword(final CustomerEntity customerEntity) {
 
         String password = customerEntity.getPassword();
-        if(password == null) {
-            password = "foodApp@123";
-        }
 
         final String[] encryptedData = passwordCryptographyProvider.encrypt(password);
         customerEntity.setSalt(encryptedData[0]);
         customerEntity.setPassword(encryptedData[1]);
+    }
+
+    public CustomerAuthEntity authenticate(final String contactNumber, final String password) throws AuthenticationFailedException {
+
+        //1. Using customerDao to find the user based on contact number
+        CustomerEntity customerEntity = customerDao.searchByContactNumber(contactNumber);
+
+        if(customerEntity == null) {
+            throw new AuthenticationFailedException("AUTH-001", "This contact number has not been registered!");
+
+        } else {
+
+            //2. Authenticate the user
+                // Encrypt the password(received from the user with the salt)
+
+            String encryptedPassword = passwordCryptographyProvider.encrypt(password, customerEntity.getSalt());
+
+            if(customerEntity.getPassword().equals(encryptedPassword)) {
+
+                // User has been authenticated
+                // Create a JWT token for the user
+                JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
+
+                // Store data and that token in the database using CustomerAuthEntity
+                CustomerAuthEntity customerAuthEntity = new CustomerAuthEntity();
+                customerAuthEntity.setUuid(customerEntity.getUuid());
+                customerAuthEntity.setCustomerId( (int) customerEntity.getId());
+
+                ZonedDateTime now = ZonedDateTime.now();
+                ZonedDateTime expiry = now.plusHours(8);
+                customerAuthEntity.setLoginAt(now);
+                customerAuthEntity.setExpiresAt(expiry);
+
+                String accessToken = jwtTokenProvider.generateToken(customerEntity.getUuid(), now, expiry);
+                customerAuthEntity.setAccess_token(accessToken);
+
+                // Persist the CustomerAuthEntity generated, in the database
+                customerAuthEntityDao.create(customerAuthEntity);
+                customerDao.updateUser(customerEntity);
+
+                // Return the CustomerAuthEntity generated
+                return customerAuthEntity;
+
+            } else {
+                throw new AuthenticationFailedException("AUTH-002", "Invalid Credentials");
+
+            }
+        }
+    }
+
+    public CustomerEntity searchByContactNumber(final String contactNumber) {
+
+        return customerDao.searchByContactNumber(contactNumber);
+    }
+
+    public CustomerEntity searchByUuid(final String uuid) {
+
+        return customerDao.searchByUuid(uuid);
     }
 }

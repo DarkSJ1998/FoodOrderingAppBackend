@@ -5,12 +5,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "CUSTOMER")
-@NamedQueries({
-        @NamedQuery(name = CustomerEntity.BY_CONTACT_NUMBER, query = "select c from CustomerEntity c where c.contactNumber = :contactNumber")
-})
 public class CustomerEntity {
-
-    public static final String BY_CONTACT_NUMBER = "CustomerEntity.byContactNumber";
 
     @Id
     @Column(name = "ID")

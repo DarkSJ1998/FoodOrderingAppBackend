@@ -1,7 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import javax.persistence.*;
 import javax.transaction.Transactional;
@@ -9,9 +8,6 @@ import java.util.List;
 
 @Repository
 public class CustomerDao {
-
-    @Autowired
-    private EntityManagerFactory emf;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -28,22 +24,39 @@ public class CustomerDao {
             return list.get(0);
     }
 
+    public CustomerEntity searchByUuid(final String uuid) {
+
+        TypedQuery <CustomerEntity> query = entityManager.createQuery("SELECT c from CustomerEntity c where c.uuid = :uuid",
+                CustomerEntity.class);
+
+        List <CustomerEntity> list = query.setParameter("uuid", uuid).getResultList();
+        if(list.size() == 0)
+            return null;
+        else
+            return list.get(0);
+    }
+
     @Transactional
     public CustomerEntity createUser(final CustomerEntity customerEntity) {
-        EntityManager entityManagerNew = emf.createEntityManager();
-        EntityTransaction tx = entityManagerNew.getTransaction();
-
         try {
-            tx.begin();
-            entityManagerNew.persist(customerEntity);
-            tx.commit();
+
+            entityManager.persist(customerEntity);
 
         } catch (Exception e) {
-            tx.rollback();
             System.out.println(e);
         }
 
         return customerEntity;
+    }
+
+    @Transactional
+    public void updateUser(final CustomerEntity customerEntityNew) {
+        try {
+            entityManager.merge(customerEntityNew);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
 }
