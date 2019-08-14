@@ -70,4 +70,5 @@ public class CustomerAuthEntityDao {
         else
             return list.get(0);
     }
+
 }

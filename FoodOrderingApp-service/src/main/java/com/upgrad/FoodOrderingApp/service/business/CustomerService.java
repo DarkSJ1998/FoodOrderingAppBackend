@@ -7,6 +7,7 @@ import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -197,5 +198,35 @@ public class CustomerService {
         }
 
         return customerAuthEntity;
+    }
+
+    public CustomerEntity getCustomer (final String accessToken) throws AuthorizationFailedException {
+        CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
+        if(customerAuthEntity == null) {
+            throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
+        }
+
+        customerAuthEntity = logout(customerAuthEntity.getAccess_token());
+        return customerAuthEntity.getCustomer();
+    }
+
+    public CustomerEntity updateCustomerPassword (final String oldPassword, final String newPassword,final CustomerEntity customerEntity) throws UpdateCustomerException {
+
+        if( oldPassword.length()==0 || newPassword.length()==0 )
+            throw new UpdateCustomerException("UCR-003","No field should be empty");
+
+        CustomerEntity newCustomerEntity = new CustomerEntity();
+        newCustomerEntity.setPassword(newPassword);
+
+        if(!isPasswordStrong(newCustomerEntity))
+            throw new UpdateCustomerException("UCR-001","Weak password!");
+
+        if(!customerEntity.getPassword().equals(oldPassword))
+            throw new UpdateCustomerException("UCR-004","Incorrect old password!");
+
+        customerEntity.setPassword(newPassword);
+        CustomerDao.updateCustomer(customerEntity);
+
+        return customerEntity;
     }
 }

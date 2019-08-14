@@ -1,9 +1,6 @@
 package com.upgrad.FoodOrderingApp.api.controller;
 
-import com.upgrad.FoodOrderingApp.api.model.LoginResponse;
-import com.upgrad.FoodOrderingApp.api.model.LogoutResponse;
-import com.upgrad.FoodOrderingApp.api.model.SignupCustomerRequest;
-import com.upgrad.FoodOrderingApp.api.model.SignupCustomerResponse;
+import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.business.CustomerService;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
@@ -92,7 +89,7 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/customer/logout", method=RequestMethod.POST)
-    public ResponseEntity<LogoutResponse>logout(@RequestHeader("access-token")final String accessToken) throws AuthorizationFailedException {
+    public ResponseEntity<LogoutResponse> logout(@RequestHeader("access-token")final String accessToken) throws AuthorizationFailedException {
 
         try {
             CustomerAuthEntity c = customerService.logout(accessToken);
@@ -103,5 +100,20 @@ public class CustomerController {
             LogoutResponse response = new LogoutResponse().id(e.getCode()).message(e.getErrorMessage());
             return new ResponseEntity<LogoutResponse>(response, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(value = "/customer/password", method = RequestMethod.PUT)
+    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword (UpdatePasswordRequest request, @RequestHeader("access-token")final String accessToken) {
+        CustomerEntity c = customerService.getCustomer(accessToken);
+        CustomerEntity p = customerService.updateCustomerPassword(
+                request.getOldPassword(),
+                request.getNewPassword(),c
+        );
+
+        UpdatePasswordResponse response = new UpdatePasswordResponse().
+                id(p.getUuid()).
+                status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
+
+        return new ResponseEntity<UpdatePasswordResponse> (response, HttpStatus.OK);
     }
 }
