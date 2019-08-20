@@ -7,6 +7,7 @@ import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AuthenticationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.AuthorizationFailedException;
 import com.upgrad.FoodOrderingApp.service.exception.SignUpRestrictedException;
+import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class CustomerController {
                     decodedArray[0], decodedArray[1]
             );
 
-            CustomerEntity customerEntity = customerService.searchByUuid(customerAuthEntity.getUuid());
+            CustomerEntity customerEntity = customerService.searchById(customerAuthEntity.getCustomerId());
 
             if(customerEntity == null) {
                 throw new AuthenticationFailedException("AUTH-002", "Invalid Credentials");
@@ -103,17 +104,31 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/customer/password", method = RequestMethod.PUT)
-    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword (UpdatePasswordRequest request, @RequestHeader("access-token")final String accessToken) {
-        CustomerEntity c = customerService.getCustomer(accessToken);
-        CustomerEntity p = customerService.updateCustomerPassword(
-                request.getOldPassword(),
-                request.getNewPassword(),c
-        );
+    public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword (UpdatePasswordRequest request, @RequestHeader("access-token")final String accessToken) throws AuthorizationFailedException, UpdateCustomerException {
 
-        UpdatePasswordResponse response = new UpdatePasswordResponse().
-                id(p.getUuid()).
-                status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
+        try {
+            CustomerEntity customerEntity = customerService.getCustomer(accessToken);
+            CustomerEntity customerEntityNew = customerService.updateCustomerPassword(
+                    request.getOldPassword(),
+                    request.getNewPassword(), customerEntity
+                    );
 
-        return new ResponseEntity<UpdatePasswordResponse> (response, HttpStatus.OK);
+            UpdatePasswordResponse response = new UpdatePasswordResponse().
+                    id(customerEntityNew.getUuid()).
+                    status("CUSTOMER PASSWORD UPDATED SUCCESSFULLY");
+
+            return new ResponseEntity<UpdatePasswordResponse>(response, HttpStatus.OK);
+
+        } catch (AuthorizationFailedException e) {
+            UpdatePasswordResponse response = new UpdatePasswordResponse().
+                    id(e.getCode()).
+                    status(e.getErrorMessage());
+            return new ResponseEntity<UpdatePasswordResponse>(response, HttpStatus.BAD_REQUEST);
+        } catch (UpdateCustomerException e) {
+            UpdatePasswordResponse response = new UpdatePasswordResponse().
+                    id(e.getCode()).
+                    status(e.getErrorMessage());
+            return new ResponseEntity<UpdatePasswordResponse>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 }

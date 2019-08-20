@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Service
 public class CustomerService {
@@ -138,8 +139,9 @@ public class CustomerService {
 
                 // Store data and that token in the database using CustomerAuthEntity
                 CustomerAuthEntity customerAuthEntity = new CustomerAuthEntity();
-                customerAuthEntity.setUuid(customerEntity.getUuid());
-                customerAuthEntity.setCustomerId( (int) customerEntity.getId());
+
+                customerAuthEntity.setUuid(UUID.randomUUID().toString());
+                customerAuthEntity.setCustomerId(customerEntity.getId());
 
                 ZonedDateTime now = ZonedDateTime.now();
                 ZonedDateTime expiry = now.plusHours(8);
@@ -171,6 +173,11 @@ public class CustomerService {
     public CustomerEntity searchByUuid(final String uuid) {
 
         return customerDao.searchByUuid(uuid);
+    }
+
+    public CustomerEntity searchById(final long id) {
+
+        return customerDao.searchById(id);
     }
 
     public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
@@ -205,28 +212,31 @@ public class CustomerService {
         if(customerAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
         }
-
-        customerAuthEntity = logout(customerAuthEntity.getAccess_token());
-        return customerAuthEntity.getCustomer();
+        CustomerEntity customerEntity = customerDao.searchById(customerAuthEntity.getCustomerId());
+        return customerEntity;
     }
 
     public CustomerEntity updateCustomerPassword (final String oldPassword, final String newPassword,final CustomerEntity customerEntity) throws UpdateCustomerException {
 
+        String encryptedOldPassword = passwordCryptographyProvider.encrypt(oldPassword, customerEntity.getSalt());
+        String encryptedNewPassword = passwordCryptographyProvider.encrypt(newPassword, customerEntity.getSalt());
+
         if( oldPassword.length()==0 || newPassword.length()==0 )
-            throw new UpdateCustomerException("UCR-003","No field should be empty");
+            throw new UpdateCustomerException("UCR-003", "No field should be empty");
 
         CustomerEntity newCustomerEntity = new CustomerEntity();
         newCustomerEntity.setPassword(newPassword);
 
         if(!isPasswordStrong(newCustomerEntity))
-            throw new UpdateCustomerException("UCR-001","Weak password!");
+            throw new UpdateCustomerException("UCR-001", "Weak password!");
 
-        if(!customerEntity.getPassword().equals(oldPassword))
-            throw new UpdateCustomerException("UCR-004","Incorrect old password!");
+        if(!customerEntity.getPassword().equals(encryptedOldPassword))
+            throw new UpdateCustomerException("UCR-004", "Incorrect old password!");
 
-        customerEntity.setPassword(newPassword);
-        CustomerDao.updateCustomer(customerEntity);
+        customerEntity.setPassword(encryptedNewPassword);
+        customerDao.updateUser(customerEntity);
 
         return customerEntity;
     }
+
 }

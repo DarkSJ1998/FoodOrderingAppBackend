@@ -19,7 +19,7 @@ public class CustomerAuthEntity {
 
     @Column(name = "CUSTOMER_ID")
     @NotNull
-    private int customerId;
+    private long customerId;
 
     @Column(name = "ACCESS_TOKEN")
     private String access_token;
@@ -49,11 +49,11 @@ public class CustomerAuthEntity {
         this.uuid = uuid;
     }
 
-    public int getCustomerId() {
+    public long getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(long customerId) {
         this.customerId = customerId;
     }
 

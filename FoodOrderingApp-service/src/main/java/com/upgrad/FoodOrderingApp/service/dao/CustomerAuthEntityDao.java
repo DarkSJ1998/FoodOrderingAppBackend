@@ -50,6 +50,7 @@ public class CustomerAuthEntityDao {
             tx.begin();
             entityManager.merge(customerAuthEntity);
             tx.commit();
+            System.out.println("customerAuthEntity updated with UUID : " + customerAuthEntity.getUuid());
 
         } catch (Exception e) {
             tx.rollback();

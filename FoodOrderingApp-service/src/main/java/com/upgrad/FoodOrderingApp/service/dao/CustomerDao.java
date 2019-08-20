@@ -36,6 +36,18 @@ public class CustomerDao {
             return list.get(0);
     }
 
+    public CustomerEntity searchById(final long id) {
+
+        TypedQuery <CustomerEntity> query = entityManager.createQuery("SELECT c from CustomerEntity c where c.id = :id",
+                CustomerEntity.class);
+
+        List <CustomerEntity> list = query.setParameter("id", id).getResultList();
+        if(list.size() == 0)
+            return null;
+        else
+            return list.get(0);
+    }
+
     @Transactional
     public CustomerEntity createUser(final CustomerEntity customerEntity) {
         try {
