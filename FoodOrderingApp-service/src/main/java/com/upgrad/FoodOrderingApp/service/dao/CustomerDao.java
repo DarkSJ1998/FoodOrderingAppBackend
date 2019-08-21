@@ -3,7 +3,6 @@ package com.upgrad.FoodOrderingApp.service.dao;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import org.springframework.stereotype.Repository;
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -48,7 +47,6 @@ public class CustomerDao {
             return list.get(0);
     }
 
-    @Transactional
     public CustomerEntity createUser(final CustomerEntity customerEntity) {
         try {
 
@@ -61,7 +59,6 @@ public class CustomerDao {
         return customerEntity;
     }
 
-    @Transactional
     public void updateUser(final CustomerEntity customerEntityNew) {
         try {
             entityManager.merge(customerEntityNew);

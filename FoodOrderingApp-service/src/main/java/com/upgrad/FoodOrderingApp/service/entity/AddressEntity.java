@@ -29,7 +29,7 @@ public class AddressEntity {
     private String pincode;
 
     @Column(name = "STATE_ID")
-    private int stateId;
+    private long stateId;
 
     public long getId() {
         return id;
@@ -79,11 +79,11 @@ public class AddressEntity {
         this.pincode = pincode;
     }
 
-    public int getStateId() {
+    public long getStateId() {
         return stateId;
     }
 
-    public void setStateId(int stateId) {
+    public void setStateId(long stateId) {
         this.stateId = stateId;
     }
 }

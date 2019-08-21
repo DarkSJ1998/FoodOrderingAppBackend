@@ -11,6 +11,7 @@ import com.upgrad.FoodOrderingApp.service.exception.UpdateCustomerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ public class CustomerService {
     @Autowired
     private PasswordCryptographyProvider passwordCryptographyProvider;
 
+    @Transactional
     public CustomerEntity signup(final CustomerEntity customerEntity) throws SignUpRestrictedException {
         CustomerEntity obj = customerDao.searchByContactNumber(customerEntity.getContactNumber());
 
@@ -116,6 +118,7 @@ public class CustomerService {
         customerEntity.setPassword(encryptedData[1]);
     }
 
+    @Transactional
     public CustomerAuthEntity authenticate(final String contactNumber, final String password) throws AuthenticationFailedException {
 
         //1. Using customerDao to find the user based on contact number
@@ -165,57 +168,72 @@ public class CustomerService {
         }
     }
 
+    @Transactional
     public CustomerEntity searchByContactNumber(final String contactNumber) {
 
         return customerDao.searchByContactNumber(contactNumber);
     }
 
+    @Transactional
     public CustomerEntity searchByUuid(final String uuid) {
 
         return customerDao.searchByUuid(uuid);
     }
 
+    @Transactional
     public CustomerEntity searchById(final long id) {
 
         return customerDao.searchById(id);
     }
 
+    @Transactional
     public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
 
         CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
 
         if (customerAuthEntity == null) {
             throw new AuthorizationFailedException("AUTH-001", "Customer is not Logged in.");
+        }
+
+        if(!isCustomerLoggedIn(accessToken)) {
+            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+        }
+
+        if(checkTokenExpiry(accessToken)) {
+            throw new AuthorizationFailedException("ATHR-002", "Customer is logged out. Log in again to access this endpoint.");
+        }
+
+        ZonedDateTime now = ZonedDateTime.now();
+        long difference = customerAuthEntity.getExpiresAt().compareTo(now);
+
+        if(customerAuthEntity.getLogoutAt() != null) {
+            throw new AuthorizationFailedException("AUTH-002", "Customer is logged out. Log in again to access this endpoint.");
+        } else if (difference < 0) {
+            throw new AuthorizationFailedException("AUTH-003", "Your session is expired. Log in again to access this endpoint.");
         } else {
-            //1. Authenticate the user
-            // - Encrypt the password(received from the user with the salt)
-            //String encryptedPassword = pcp.encrypt(password, user.getSalt());
-            ZonedDateTime now = ZonedDateTime.now();
-            long difference = customerAuthEntity.getExpiresAt().compareTo(now);
-
-            if(customerAuthEntity.getLogoutAt() != null) {
-                throw new AuthorizationFailedException("AUTH-002", "Customer is logged out. Log in again to access this endpoint.");
-            } else if (difference < 0) {
-                throw new AuthorizationFailedException("AUTH-003", "Your session is expired. Log in again to access this endpoint.");
-            } else {
-                customerAuthEntity.setLogoutAt(now);
-                customerAuthEntityDao.updateCustomer(customerAuthEntity);
-
-            }
+            customerAuthEntity.setLogoutAt(now);
+            customerAuthEntityDao.updateCustomer(customerAuthEntity);
         }
 
         return customerAuthEntity;
     }
 
+    @Transactional
     public CustomerEntity getCustomer (final String accessToken) throws AuthorizationFailedException {
         CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
+
         if(customerAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "Customer is not Logged in.");
         }
+
+        ZonedDateTime now = ZonedDateTime.now();
+        long difference = customerAuthEntity.getExpiresAt().compareTo(now);
+
         CustomerEntity customerEntity = customerDao.searchById(customerAuthEntity.getCustomerId());
         return customerEntity;
     }
 
+    @Transactional
     public CustomerEntity updateCustomerPassword (final String oldPassword, final String newPassword,final CustomerEntity customerEntity) throws UpdateCustomerException {
 
         String encryptedOldPassword = passwordCryptographyProvider.encrypt(oldPassword, customerEntity.getSalt());
@@ -239,4 +257,39 @@ public class CustomerService {
         return customerEntity;
     }
 
+    @Transactional
+    public boolean checkTokenExpiry(final String accessToken) {
+        CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
+
+        if(customerAuthEntity == null) {
+            return true;
+        }
+
+        ZonedDateTime now = ZonedDateTime.now();
+        long diff = customerAuthEntity.getExpiresAt().compareTo(now);
+
+        if(diff < 0)
+            return true;
+        else
+            return false;
+    }
+
+    @Transactional
+    public boolean isCustomerLoggedIn(final String accessToken) {
+        CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
+
+        if(customerAuthEntity == null)
+            return false;
+
+        ZonedDateTime logoutAt = customerAuthEntity.getLogoutAt();
+        ZonedDateTime loginAt = customerAuthEntity.getLoginAt();
+        if(logoutAt == null)
+            return true;
+
+        long diff = loginAt.compareTo(logoutAt);
+        if(diff > 0)
+            return true;
+        else
+            return false;
+    }
 }

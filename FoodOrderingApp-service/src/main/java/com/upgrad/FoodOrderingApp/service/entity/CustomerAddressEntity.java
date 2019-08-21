@@ -14,11 +14,11 @@ public class CustomerAddressEntity {
 
     @Column(name = "CUSTOMER_ID")
     @NotNull
-    private int customerId;
+    private long customerId;
 
     @Column(name = "ADDRESS_ID")
     @NotNull
-    private int addressId;
+    private long addressId;
 
     public long getId() {
         return id;
@@ -28,19 +28,19 @@ public class CustomerAddressEntity {
         this.id = id;
     }
 
-    public int getCustomerId() {
+    public long getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(long customerId) {
         this.customerId = customerId;
     }
 
-    public int getAddressId() {
+    public long getAddressId() {
         return addressId;
     }
 
-    public void setAddressId(int addressId) {
+    public void setAddressId(long addressId) {
         this.addressId = addressId;
     }
 }

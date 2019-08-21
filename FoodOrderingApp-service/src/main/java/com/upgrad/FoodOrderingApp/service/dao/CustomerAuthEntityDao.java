@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -17,11 +16,9 @@ public class CustomerAuthEntityDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
     public CustomerAuthEntity create(final CustomerAuthEntity customerAuthEntity) {
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        System.out.println("customerAuthEntity created with UUID : " + customerAuthEntity.getUuid());
 
         EntityTransaction tx = entityManager.getTransaction();
 
@@ -36,12 +33,16 @@ public class CustomerAuthEntityDao {
             System.out.println(e);
             return null;
         }
+        System.out.println("// customerAuthEntity created : ");
+        System.out.println("   uuid : " + customerAuthEntity.getUuid());
+        System.out.println("   login_at : " + customerAuthEntity.getLoginAt());
+        System.out.println("   logout_at : " + customerAuthEntity.getLogoutAt());
         return customerAuthEntity;
     }
 
-    @Transactional
     public CustomerAuthEntity updateCustomer(final CustomerAuthEntity customerAuthEntity) {
 
+        System.out.println("// updateCustomer called.");
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction tx = entityManager.getTransaction();
 
@@ -57,6 +58,12 @@ public class CustomerAuthEntityDao {
             System.out.println(e);
             return null;
         }
+
+        System.out.println("// customerAuthEntity updated : ");
+        System.out.println("   uuid : " + customerAuthEntity.getUuid());
+        System.out.println("   login_at : " + customerAuthEntity.getLoginAt());
+        System.out.println("   logout_at : " + customerAuthEntity.getLogoutAt());
+
         return customerAuthEntity;
     }
 
