@@ -19,13 +19,15 @@ import java.util.List;
 public class AddressService {
 
     @Autowired
-    AddressDao addressDao;
+    private AddressDao addressDao;
 
     @Autowired
-    CustomerAddressDao customerAddressDao;
+    private CustomerAddressDao customerAddressDao;
 
     @Transactional
     public AddressEntity saveAddress(AddressEntity addressEntity, final String stateUuid, final CustomerEntity customerEntity) throws SaveAddressException, AddressNotFoundException {
+
+        System.out.println("\n\t ====> AddressService.saveAddress() called");
 
         if(isFieldEmpty(addressEntity, stateUuid)) {
             throw new SaveAddressException("SAR-001", "No field can be empty");
@@ -83,33 +85,60 @@ public class AddressService {
 
     @Transactional
     public StateEntity getStateIdByUuid(final String stateUuid) throws AddressNotFoundException {
+
+        System.out.println("\n\t ====> AddressService.getStateIdByUuid() called");
+
         return addressDao.getStateIdByUuid(stateUuid);
     }
 
     @Transactional
     public List <AddressEntity> getAllAddresses(final CustomerEntity customerEntity) {
+
+        System.out.println("\n\t ====> AddressService.getAllAddresses() called");
+
         return addressDao.getAllAddresses(customerEntity);
     }
 
     @Transactional
     public String getStateNameByStateId(final long stateId) {
+
+        System.out.println("\n\t ====> AddressService.getStateNameByStateId() called");
+
         return addressDao.getStateNameByStateId(stateId);
     }
 
     @Transactional
     @Modifying
     public AddressEntity deleteAddress(AddressEntity addressEntity, CustomerAddressEntity customerAddressEntity) {
+
+        System.out.println("\n\t ====> AddressService.deleteAddress() called");
+
         customerAddressDao.deleteCustomerAddress(customerAddressEntity);
         return addressDao.deleteAddress(addressEntity);
     }
 
     @Transactional
     public AddressEntity searchByUuid(final String addressUuid) {
+
+        System.out.println("\n\t ====> AddressService.searchByUuid() called");
+
         return addressDao.searchByUuid(addressUuid);
     }
 
     @Transactional
     public CustomerAddressEntity searchByAddressId(final long addressId) {
+
+        System.out.println("\n\t ====> AddressService.searchByAddressId() called");
+
         return customerAddressDao.searchByAddressId(addressId);
     }
+
+    @Transactional
+    public AddressEntity getAddressById(final Long addressId) {
+
+        System.out.println("\n\t ====> AddressService.getAddressById() called");
+
+        return addressDao.getAddressById(addressId);
+    }
+
 }

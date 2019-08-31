@@ -19,16 +19,19 @@ import java.util.UUID;
 public class CustomerService {
 
     @Autowired
-    CustomerDao customerDao;
+    private CustomerDao customerDao;
 
     @Autowired
-    CustomerAuthEntityDao customerAuthEntityDao;
+    private CustomerAuthEntityDao customerAuthEntityDao;
 
     @Autowired
     private PasswordCryptographyProvider passwordCryptographyProvider;
 
     @Transactional
     public CustomerEntity signup(final CustomerEntity customerEntity) throws SignUpRestrictedException {
+
+        System.out.println("\n\t ====> CustomerService.signup() called");
+
         CustomerEntity obj = customerDao.searchByContactNumber(customerEntity.getContactNumber());
 
         if(obj != null) {
@@ -121,6 +124,8 @@ public class CustomerService {
     @Transactional
     public CustomerAuthEntity authenticate(final String contactNumber, final String password) throws AuthenticationFailedException {
 
+        System.out.println("\n\t ====> CustomerService.authenticate() called");
+
         //1. Using customerDao to find the user based on contact number
         CustomerEntity customerEntity = customerDao.searchByContactNumber(contactNumber);
 
@@ -171,11 +176,15 @@ public class CustomerService {
     @Transactional
     public CustomerEntity searchByContactNumber(final String contactNumber) {
 
+        System.out.println("\n\t ====> CustomerService.searchByContactNumber() called");
+
         return customerDao.searchByContactNumber(contactNumber);
     }
 
     @Transactional
     public CustomerEntity searchByUuid(final String uuid) {
+
+        System.out.println("\n\t ====> CustomerService.searchByUuid() called");
 
         return customerDao.searchByUuid(uuid);
     }
@@ -183,11 +192,15 @@ public class CustomerService {
     @Transactional
     public CustomerEntity searchById(final long id) {
 
+        System.out.println("\n\t ====> CustomerService.searchById() called");
+
         return customerDao.searchById(id);
     }
 
     @Transactional
     public CustomerAuthEntity logout(final String accessToken) throws AuthorizationFailedException {
+
+        System.out.println("\n\t ====> CustomerService.logout() called");
 
         CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
 
@@ -220,6 +233,9 @@ public class CustomerService {
 
     @Transactional
     public CustomerEntity getCustomer (final String accessToken) throws AuthorizationFailedException {
+
+        System.out.println("\n\t ====> CustomerService.getCustomer() called");
+
         CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
 
         if(customerAuthEntity == null) {
@@ -235,6 +251,8 @@ public class CustomerService {
 
     @Transactional
     public CustomerEntity updateCustomerPassword (final String oldPassword, final String newPassword,final CustomerEntity customerEntity) throws UpdateCustomerException {
+
+        System.out.println("\n\t ====> CustomerService.updateCustomerPassword() called");
 
         String encryptedOldPassword = passwordCryptographyProvider.encrypt(oldPassword, customerEntity.getSalt());
         String encryptedNewPassword = passwordCryptographyProvider.encrypt(newPassword, customerEntity.getSalt());
@@ -259,6 +277,9 @@ public class CustomerService {
 
     @Transactional
     public boolean checkTokenExpiry(final String accessToken) {
+
+        System.out.println("\n\t ====> CustomerService.checkTokenExpiry() called");
+
         CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
 
         if(customerAuthEntity == null) {
@@ -276,6 +297,9 @@ public class CustomerService {
 
     @Transactional
     public boolean isCustomerLoggedIn(final String accessToken) {
+
+        System.out.println("\n\t ====> CustomerService.isCustomerLoggedIn() called");
+
         CustomerAuthEntity customerAuthEntity = customerAuthEntityDao.getAuthTokenByAccessToken(accessToken);
 
         if(customerAuthEntity == null)
@@ -292,4 +316,5 @@ public class CustomerService {
         else
             return false;
     }
+
 }

@@ -13,6 +13,8 @@ public class CustomerDao {
 
     public CustomerEntity searchByContactNumber(final String contactNumber) {
 
+        System.out.println("\n\t ======> CustomerDao.searchByContactNumber() called");
+
         TypedQuery <CustomerEntity> query = entityManager.createQuery("SELECT c from CustomerEntity c where c.contactNumber = :contactNumber",
                 CustomerEntity.class);
 
@@ -24,6 +26,8 @@ public class CustomerDao {
     }
 
     public CustomerEntity searchByUuid(final String uuid) {
+
+        System.out.println("\n\t ======> CustomerDao.searchByUuid() called");
 
         TypedQuery <CustomerEntity> query = entityManager.createQuery("SELECT c from CustomerEntity c where c.uuid = :uuid",
                 CustomerEntity.class);
@@ -37,6 +41,8 @@ public class CustomerDao {
 
     public CustomerEntity searchById(final long id) {
 
+        System.out.println("\n\t ======> CustomerDao.searchById() called");
+
         TypedQuery <CustomerEntity> query = entityManager.createQuery("SELECT c from CustomerEntity c where c.id = :id",
                 CustomerEntity.class);
 
@@ -48,6 +54,9 @@ public class CustomerDao {
     }
 
     public CustomerEntity createUser(final CustomerEntity customerEntity) {
+
+        System.out.println("\n\t ======> CustomerDao.createUser() called");
+
         try {
 
             entityManager.persist(customerEntity);
@@ -60,6 +69,9 @@ public class CustomerDao {
     }
 
     public void updateUser(final CustomerEntity customerEntityNew) {
+
+        System.out.println("\n\t ======> CustomerDao.updateUser() called");
+
         try {
             entityManager.merge(customerEntityNew);
 

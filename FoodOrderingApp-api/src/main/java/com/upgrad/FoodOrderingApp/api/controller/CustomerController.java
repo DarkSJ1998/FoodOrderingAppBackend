@@ -24,10 +24,13 @@ import java.util.UUID;
 public class CustomerController {
 
     @Autowired
-    CustomerService customerService;
+    private CustomerService customerService;
 
     @RequestMapping(value = "/customer/signup", method = RequestMethod.POST)
     public ResponseEntity<SignupCustomerResponse> signup(SignupCustomerRequest signupCustomerRequest) throws SignUpRestrictedException {
+
+        System.out.println("\n\t ==> CustomerController.signup() called");
+
         CustomerEntity customerEntity = new CustomerEntity();
 
         customerEntity.setUuid( UUID.randomUUID().toString() );
@@ -51,6 +54,9 @@ public class CustomerController {
 
     @RequestMapping(value = "/customer/login", method = RequestMethod.POST)
     public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") final String authorization) throws AuthenticationFailedException {
+
+        System.out.println("\n\t ==> CustomerController.login() called");
+
         byte[] decodedBytes = Base64.getDecoder().decode(authorization);
         String decodedString = new String(decodedBytes);
 
@@ -92,6 +98,8 @@ public class CustomerController {
     @RequestMapping(value = "/customer/logout", method=RequestMethod.POST)
     public ResponseEntity<LogoutResponse> logout(@RequestHeader("access-token")final String accessToken) throws AuthorizationFailedException {
 
+        System.out.println("\n\t ==> CustomerController.logout() called");
+
         try {
             CustomerAuthEntity c = customerService.logout(accessToken);
             LogoutResponse response = new LogoutResponse().id(c.getUuid()).message("LOGGED OUT SUCCESSFULLY");
@@ -105,6 +113,8 @@ public class CustomerController {
 
     @RequestMapping(value = "/customer/password", method = RequestMethod.PUT)
     public ResponseEntity<UpdatePasswordResponse> updateCustomerPassword (UpdatePasswordRequest request, @RequestHeader("access-token")final String accessToken) throws AuthorizationFailedException, UpdateCustomerException {
+
+        System.out.println("\n\t ==> CustomerController.updateCustomerPassword() called");
 
         try {
             CustomerEntity customerEntity = customerService.getCustomer(accessToken);
@@ -131,4 +141,5 @@ public class CustomerController {
             return new ResponseEntity<UpdatePasswordResponse>(response, HttpStatus.BAD_REQUEST);
         }
     }
+
 }

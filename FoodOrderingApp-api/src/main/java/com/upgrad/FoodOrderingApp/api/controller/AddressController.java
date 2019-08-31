@@ -22,13 +22,15 @@ import java.util.UUID;
 public class AddressController {
 
     @Autowired
-    CustomerService customerService;
+    private CustomerService customerService;
 
     @Autowired
-    AddressService addressService;
+    private AddressService addressService;
 
     @RequestMapping(value = "/address", method = RequestMethod.POST)
     public ResponseEntity<SaveAddressResponse> saveAddress(SaveAddressRequest saveAddressRequest, @RequestHeader("access-token") final String accessToken) {
+
+        System.out.println("\n\t ==> AddressController.saveAddress() called");
 
         try {
             CustomerEntity customerEntity = customerService.getCustomer(accessToken);
@@ -89,6 +91,8 @@ public class AddressController {
     @RequestMapping(value = "/address/customer", method = RequestMethod.GET)
     public ResponseEntity getAllAddresses(@RequestHeader("access-token") final String accessToken) {
 
+        System.out.println("\n\t ==> AddressController.getAllAddresses() called");
+
         try {
             CustomerEntity customerEntity = customerService.getCustomer(accessToken);
 
@@ -137,6 +141,8 @@ public class AddressController {
 
     @RequestMapping(value = "/address/{address_id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteAddress(@PathVariable("address_id") final String addressUuid, @RequestHeader("access-token") final String accessToken) {
+
+        System.out.println("\n\t ==> AddressController.deleteAddress() called");
 
         try {
             CustomerEntity customerEntity = customerService.getCustomer(accessToken);

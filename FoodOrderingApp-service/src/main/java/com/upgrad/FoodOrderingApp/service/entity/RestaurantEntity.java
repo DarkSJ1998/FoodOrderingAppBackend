@@ -37,7 +37,7 @@ public class RestaurantEntity {
 
     @Column(name = "ADDRESS_ID")
     @NotNull
-    private int addressId;
+    private long addressId;
 
     public long getId() {
         return id;
@@ -95,11 +95,11 @@ public class RestaurantEntity {
         this.numberOfCustomersRated = numberOfCustomersRated;
     }
 
-    public int getAddressId() {
+    public long getAddressId() {
         return addressId;
     }
 
-    public void setAddressId(int addressId) {
+    public void setAddressId(long addressId) {
         this.addressId = addressId;
     }
 }

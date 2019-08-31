@@ -14,11 +14,11 @@ public class CategoryItemEntity {
 
     @Column(name = "ITEM_ID")
     @NotNull
-    private int itemId;
+    private long itemId;
 
     @Column(name = "CATEGORY_ID")
     @NotNull
-    private int categoryId;
+    private long categoryId;
 
     public long getId() {
         return id;
@@ -28,19 +28,28 @@ public class CategoryItemEntity {
         this.id = id;
     }
 
-    public int getItemId() {
+    public long getItemId() {
         return itemId;
     }
 
-    public void setItemId(int itemId) {
+    public void setItemId(long itemId) {
         this.itemId = itemId;
     }
 
-    public int getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    @Override
+    public String toString() {
+        return "CategoryItemEntity{" +
+                "id=" + id +
+                ", itemId=" + itemId +
+                ", categoryId=" + categoryId +
+                '}';
     }
 }

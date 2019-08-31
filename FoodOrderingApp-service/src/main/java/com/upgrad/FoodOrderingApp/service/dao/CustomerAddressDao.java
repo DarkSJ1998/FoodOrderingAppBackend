@@ -18,6 +18,8 @@ public class CustomerAddressDao {
 
     public CustomerAddressEntity searchByAddressId(final long addressId) {
 
+        System.out.println("\n\t ======> CustomerAddressDao.searchByAddressId() called");
+
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         TypedQuery<CustomerAddressEntity> query = entityManager.
@@ -31,6 +33,8 @@ public class CustomerAddressDao {
     }
 
     public CustomerAddressEntity saveCustomerAddress(final CustomerAddressEntity customerAddressEntity) {
+
+        System.out.println("\n\t ======> CustomerAddressDao.saveCustomerAddress() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction tx = entityManager.getTransaction();
@@ -56,6 +60,8 @@ public class CustomerAddressDao {
 
     public CustomerAddressEntity deleteCustomerAddress(final CustomerAddressEntity customerAddressEntity) {
 
+        System.out.println("\n\t ======> CustomerAddressDao.deleteCustomerAddress() called");
+
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction tx = entityManager.getTransaction();
 
@@ -77,4 +83,5 @@ public class CustomerAddressDao {
 
         return customerAddressEntity;
     }
+
 }

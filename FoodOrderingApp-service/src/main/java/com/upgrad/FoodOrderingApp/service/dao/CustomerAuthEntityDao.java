@@ -18,6 +18,8 @@ public class CustomerAuthEntityDao {
 
     public CustomerAuthEntity create(final CustomerAuthEntity customerAuthEntity) {
 
+        System.out.println("\n\t ======> CustomerAuthEntityDao.create() called");
+
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         EntityTransaction tx = entityManager.getTransaction();
@@ -42,7 +44,8 @@ public class CustomerAuthEntityDao {
 
     public CustomerAuthEntity updateCustomer(final CustomerAuthEntity customerAuthEntity) {
 
-        System.out.println("// updateCustomer called.");
+        System.out.println("\n\t ======> CustomerAuthEntityDao.updateCustomer() called");
+
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction tx = entityManager.getTransaction();
 
@@ -68,6 +71,8 @@ public class CustomerAuthEntityDao {
     }
 
     public CustomerAuthEntity getAuthTokenByAccessToken(final String access_token) {
+
+        System.out.println("\n\t ======> CustomerAuthEntityDao.getAuthTokenByAccessToken() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         TypedQuery <CustomerAuthEntity> query = entityManager.

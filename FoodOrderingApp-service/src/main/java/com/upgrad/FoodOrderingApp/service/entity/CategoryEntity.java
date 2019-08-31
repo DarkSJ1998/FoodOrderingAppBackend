@@ -42,4 +42,13 @@ public class CategoryEntity {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+
+    @Override
+    public String toString() {
+        return "CategoryEntity{" +
+                "id=" + id +
+                ", uuid='" + uuid + '\'' +
+                ", categoryName='" + categoryName + '\'' +
+                '}';
+    }
 }

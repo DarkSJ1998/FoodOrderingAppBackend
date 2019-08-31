@@ -14,11 +14,11 @@ public class RestaurantCategoryEntity {
 
     @Column(name = "RESTAURANT_ID")
     @NotNull
-    private int restaurantId;
+    private long restaurantId;
 
     @Column(name = "CATEGORY_ID")
     @NotNull
-    private int categoryId;
+    private long categoryId;
 
     public long getId() {
         return id;
@@ -28,19 +28,28 @@ public class RestaurantCategoryEntity {
         this.id = id;
     }
 
-    public int getRestaurantId() {
+    public long getRestaurantId() {
         return restaurantId;
     }
 
-    public void setRestaurantId(int restaurantId) {
+    public void setRestaurantId(long restaurantId) {
         this.restaurantId = restaurantId;
     }
 
-    public int getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    @Override
+    public String toString() {
+        return "RestaurantCategoryEntity{" +
+                "id=" + id +
+                ", restaurantId=" + restaurantId +
+                ", categoryId=" + categoryId +
+                '}';
     }
 }

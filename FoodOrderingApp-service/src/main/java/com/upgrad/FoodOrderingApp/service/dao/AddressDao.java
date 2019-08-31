@@ -14,13 +14,12 @@ import java.util.List;
 @Repository
 public class AddressDao {
 
-    @Autowired
+    @PersistenceUnit
     private EntityManagerFactory entityManagerFactory;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     public AddressEntity saveAddress(AddressEntity addressEntity) {
+
+        System.out.println("\n\t ======> AddressDao.saveAddress() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         System.out.println("addressEntity created with UUID : " + addressEntity.getUuid());
@@ -47,10 +46,14 @@ public class AddressDao {
         System.out.println("   flatBuilNumber : " + addressEntity.getFlatBuilNumber());
         System.out.println("   stateid : " + addressEntity.getStateId());
 
+        entityManager.close();
+
         return addressEntity;
     }
 
     public StateEntity getStateIdByUuid(final String stateUuid) {
+
+        System.out.println("\n\t ======> AddressDao.getStateIdByUuid() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -58,6 +61,7 @@ public class AddressDao {
                 createQuery("select s from StateEntity s where s.uuid = :uuid", StateEntity.class);
         List<StateEntity> list = query.setParameter("uuid", stateUuid).getResultList();
 
+        entityManager.close();
         if(list.size() == 0)
             return null;
         else
@@ -65,6 +69,8 @@ public class AddressDao {
     }
 
     public List <AddressEntity> getAllAddresses(final CustomerEntity customerEntity) {
+
+        System.out.println("\n\t ======> AddressDao.getAllAddresses() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -88,16 +94,21 @@ public class AddressDao {
 
             list.add(addressEntity);
         }
+        entityManager.close();
         return list;
     }
 
     public String getStateNameByStateId(final long stateId) {
+
+        System.out.println("\n\t ======> AddressDao.getStateNameByStateId() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         TypedQuery <StateEntity> query = entityManager.
                 createQuery("select s from StateEntity s where s.id = :id", StateEntity.class);
         List<StateEntity> list = query.setParameter("id", stateId).getResultList();
+
+        entityManager.close();
 
         if(list.size() == 0)
             return null;
@@ -106,6 +117,8 @@ public class AddressDao {
     }
 
     public AddressEntity deleteAddress(AddressEntity addressEntity) {
+
+        System.out.println("\n\t ======> AddressDao.deleteAddress() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction tx = entityManager.getTransaction();
@@ -125,11 +138,14 @@ public class AddressDao {
             System.out.println(e);
             return null;
         }
+        entityManager.close();
 
         return addressEntity;
     }
 
     public AddressEntity searchByUuid(final String addressUuid) {
+
+        System.out.println("\n\t ======> AddressDao.searchByUuid() called");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -137,9 +153,36 @@ public class AddressDao {
                 createQuery("select a from AddressEntity a where a.uuid = :uuid", AddressEntity.class);
         List<AddressEntity> list = query.setParameter("uuid", addressUuid).getResultList();
 
+        entityManager.close();
         if(list.size() == 0)
             return null;
         else
             return list.get(0);
     }
+
+    public AddressEntity getAddressById(final Long addressId) {
+
+        System.out.println("\n\t ======> AddressDao.getAddressById() called");
+
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        List <AddressEntity> list = new ArrayList<>();
+
+        try {
+            TypedQuery<AddressEntity> query = entityManager
+                    .createQuery("SELECT a FROM AddressEntity a WHERE a.id = :addressId", AddressEntity.class);
+            query.setParameter("addressId", addressId);
+            list = query.getResultList();
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+
+        entityManager.close();
+        if(list.size() == 0)
+            return null;
+        else
+            return list.get(0);
+    }
+
 }
