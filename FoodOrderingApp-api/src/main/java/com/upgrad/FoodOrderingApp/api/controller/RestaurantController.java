@@ -185,18 +185,26 @@ public class RestaurantController {
 
         try {
 
+            // Getting the RestaurantEntity object using the restaurantUuid.
             RestaurantEntity restaurantEntity = restaurantService.getRestaurantByUuid(restaurantUuid);
 
+            // Getting the RestaurantCategoryEntity object.
             List <RestaurantCategoryEntity> restaurantCategoryList = restaurantCategoryService
                     .getCategoriesUsingRestaurantId(restaurantEntity.getId());
 
+            // Creating an empty CategoryEntity list.
             List <CategoryEntity> categories = new ArrayList<>();
 
             for(RestaurantCategoryEntity restaurantCategoryEntity : restaurantCategoryList) {
+
+                // Getting a CategoryEntity object.
                 CategoryEntity categoryEntity = categoryService.getCategoryUsingId(restaurantCategoryEntity.getCategoryId());
+
+                // Saving it in CategoryEntity list.
                 categories.add(categoryEntity);
             }
 
+            // Creating an empty CategoryList list.
             List <CategoryList> categoryListList = new ArrayList<>();
 
             for(CategoryEntity category : categories) {
@@ -209,18 +217,23 @@ public class RestaurantController {
                 List<ItemList> itemList = new ArrayList<>();
 
                 for (CategoryItemEntity categoryItemEntity : list) {
+
+                    // Getting an ItemEntity object.
                     ItemEntity item = itemService.getItemUsingId(categoryItemEntity.getItemId());
 
+                    // Creating an ItemList object and setting values.
                     ItemList itemListObject = new ItemList()
                             .id(UUID.fromString(item.getUuid()))
                             .itemName(item.getItemName())
                             .price(item.getPrice());
 
+                    // Setting the item type.
                     if (item.getType().equals("0"))
                         itemListObject.setItemType(ItemList.ItemTypeEnum.VEG);
                     else if (item.getType().equals("1"))
                         itemListObject.setItemType(ItemList.ItemTypeEnum.NON_VEG);
 
+                    // Adding the ItemEntity object to list.
                     itemList.add(itemListObject);
                 }
 
@@ -230,6 +243,7 @@ public class RestaurantController {
                         .categoryName(category.getCategoryName())
                         .itemList(itemList);
 
+                // Saving CategoryList object in list.
                 categoryListList.add(categoryList);
             }
 

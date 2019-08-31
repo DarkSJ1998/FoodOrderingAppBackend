@@ -37,17 +37,22 @@ public class CategoryController {
 
         System.out.println("\n\t ==> CategoryController.getAllCategories() called");
 
+        // Getting a list of all the categories.
         List <CategoryEntity> categories = categoryService.getAllCategories();
 
+        // Creating a new list which is to be added in response.
         List <CategoryListResponse> list = new ArrayList<>();
 
         for(CategoryEntity categoryEntity : categories) {
 
+            // Creating a CategoryListResponse object.
             CategoryListResponse categoryListResponse = new CategoryListResponse()
                     .id( UUID.fromString( categoryEntity.getUuid() ) )
                     .categoryName( categoryEntity.getCategoryName() );
 
+            // Adding it to CategoryListResponse list.
             list.add(categoryListResponse);
+
         }
 
         CategoriesListResponse response = new CategoriesListResponse()
@@ -62,6 +67,8 @@ public class CategoryController {
         System.out.println("\n\t ==> CategoryController.getCategoryById() called");
 
         try {
+
+            // Getting the CategoryEntity object with the UUID.
             CategoryEntity categoryEntity = categoryService.getCategoryUsingUuid(categoryUuid);
 
             // For getting all the items for the particular category
@@ -72,6 +79,8 @@ public class CategoryController {
             List<ItemList> itemList = new ArrayList<>();
 
             for (CategoryItemEntity categoryItemEntity : list) {
+
+                // Getting the ItemEntity object using ID.
                 ItemEntity item = itemService.getItemUsingId(categoryItemEntity.getItemId());
 
                 ItemList itemListObject = new ItemList()
@@ -79,11 +88,13 @@ public class CategoryController {
                         .itemName(item.getItemName())
                         .price(item.getPrice());
 
+                // Setting the type of item.
                 if (item.getType().equals("0"))
                     itemListObject.setItemType(ItemList.ItemTypeEnum.VEG);
                 else if (item.getType().equals("1"))
                     itemListObject.setItemType(ItemList.ItemTypeEnum.NON_VEG);
 
+                // Adding item to the list.
                 itemList.add(itemListObject);
             }
 
